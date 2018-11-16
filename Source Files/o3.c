@@ -68,7 +68,7 @@ void int_to_string(char *timestamp, unsigned int offset, int i) {
 
 /**************************************************************************//**
  * @brief Konverterer 3 tall til en timestamp-string
- * timestamp-argumentet må være et array med plass til (minst) 7 elementer.
+ * timestamp-argumentet mÃ¥ vÃ¦re et array med plass til (minst) 7 elementer.
  * Det kan deklareres i funksjonen som kaller som "char timestamp[7];"
  * Kallet blir dermed:
  * char timestamp[7];
@@ -127,10 +127,6 @@ void set_4bit_flag(volatile word *w, int i, word flag) {
 
 void start_countdown() {
 	systick->VAL = systick->LOAD;
-}
-
-void stop_countdown() {
-	node = ALARM;
 }
 
 void init_io() {
@@ -213,10 +209,17 @@ void SysTick_Handler() {
 		if (time.s == 0) {
 			if (time.m == 0) {
 				if (time.h == 0) {
-					stop_countdown();
+					node = ALARM;
 				}
-				else --time.h;
-			} else --time.m;
+				else {
+					--time.h;
+					time.m = 59;
+					time.s = 59;
+				}
+			} else {
+				--time.m;
+				time.s = 59;
+			}
 		} else --time.s;
 		write_display();
 	} else if (node == ALARM) {
@@ -234,4 +237,3 @@ int main(void) {
 
     return 0;
 }
-
